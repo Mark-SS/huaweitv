@@ -39,7 +39,7 @@
   - macOS：`brew install --cask android-platform-tools`；装了 Android Studio 的直接可用，脚本会自动找到 `~/Library/Android/sdk/platform-tools/adb`。
   - Windows：从 [Android 官网](https://developer.android.com/tools/releases/platform-tools) 下载 platform-tools 解压，命令在该目录下用 `adb.exe` 执行。
 - 电脑与电视连接**同一个路由器**（手机热点、访客 Wi‑Fi 通常有设备隔离，连不上）。
-- 下载本仓库（`git clone` 或"Download ZIP"），APK 已在 `release/` 目录，不需要自己编译。
+- 下载本仓库：`git clone https://github.com/Mark-SS/huaweitv.git`（或页面右上角 Code → Download ZIP），APK 已在 `release/` 目录，不需要自己编译。
 
 ### 第 1 步：电视上打开 ADB 调试
 
@@ -52,7 +52,7 @@
 ### 第 2 步：一键安装（macOS / Linux）
 
 ```bash
-cd huaweizhihuiping
+cd huaweitv
 TV=192.168.1.20 KEEPALIVE=1 ./scripts/install.sh
 ```
 

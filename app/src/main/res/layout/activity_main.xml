@@ -130,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="12dp"
-                android:text="弹题时暂停播放：开" />
+                android:text="弹题时暂停并静音：开" />
 
             <Button
                 android:id="@+id/pinBtn"

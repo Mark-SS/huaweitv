@@ -6,13 +6,13 @@
 
 给华为智慧屏 / Android TV 的家长守护小工具：不 root、不动系统应用、不改桌面，安装前自动备份，随时一键还原。
 
-[下载 APK](release/quiztv-v1.0.apk) · [安装](#安装) · [还原](#还原) · [常见问题](#常见问题) · [开发文档](docs/DEVELOPMENT.md)
+[下载 APK](release/quiztv-v1.1.apk) · [安装](#安装) · [还原](#还原) · [常见问题](#常见问题) · [开发文档](docs/DEVELOPMENT.md)
 
 </div>
 
 ## 它做什么
 
-- 后台守护服务计时，**每 10 分钟**（可调 1–120 分钟）全屏弹出一道题，盖住正在播放的画面，并让视频暂停。
+- 后台守护服务计时，**每 10 分钟**（可调 1–120 分钟）全屏弹出一道题，盖住正在播放的画面；同时向播放器发送暂停键，并把电视静音（对 HDMI 机顶盒、直播等不响应暂停的来源也有效），答完自动恢复。
 - 遥控器方向键选择、OK 确认，或直接按数字键 1–4 作答；返回/菜单键无效，答对才能继续看。
 - **答错一题就再加一题**，并显示正确答案和解析。
 - 题目范围：小学四年级（人教版/部编版）
@@ -61,7 +61,7 @@ TV=192.168.1.20 KEEPALIVE=1 ./scripts/install.sh
 脚本会依次：
 
 1. **备份**电视状态到 `backups/<时间戳>/`（应用列表、桌面、系统设置、电池白名单、无障碍设置；如果之前装过本应用还会保存旧 APK）；
-2. 安装 `release/quiztv-v1.0.apk`；
+2. 安装 `release/quiztv-v1.1.apk`；
 3. 用 adb 授予"显示在其他应用上层"等权限（电视设置里通常没有这个开关）、加入电池白名单；
 4. `KEEPALIVE=1` 时开启无障碍 + 通知监听"复活钩子"，待机/清理后台后系统会自动拉起守护服务（改动已包含在备份里，可还原）；
 5. 启动应用并**验收**，打印权限、服务状态。
@@ -85,7 +85,7 @@ KEEPALIVE=1 ./scripts/install.sh
 
 ```bat
 adb connect 192.168.1.20:5555
-adb install -r quiztv-v1.0.apk
+adb install -r quiztv-v1.1.apk
 adb shell appops set com.quiztv.guard SYSTEM_ALERT_WINDOW allow
 adb shell dumpsys deviceidle whitelist +com.quiztv.guard
 adb shell am start -n com.quiztv.guard/.MainActivity
@@ -126,7 +126,7 @@ adb shell dumpsys activity services com.quiztv.guard/.GuardService | head -n 5  
 
 ## 使用
 
-- 首页：答题间隔 ± 调整、开启/关闭、弹题时是否暂停播放、修改家长密码、今日统计。
+- 首页：答题间隔 ± 调整、开启/关闭、弹题时是否暂停播放并静音、修改家长密码、今日统计。
 - 默认家长密码 **1234**，装好后请立即修改。
 - 弹题界面右下角「家长模式」输入密码可临时跳过本次答题。
 
@@ -157,14 +157,15 @@ adb uninstall com.quiztv.guard
 | `INSTALL_FAILED_USER_RESTRICTED` 等 | 电视 设置 → 安全/应用 里允许安装未知来源应用 |
 | 到点不弹题，通知提示缺少权限 | 执行 `adb shell appops set com.quiztv.guard SYSTEM_ALERT_WINDOW allow` |
 | 待机一晚后不弹题 | 用 `KEEPALIVE=1` 重新安装，并在 电视设置 → 应用 → 答题看电视 中允许自启动/后台运行 |
-| 弹题时视频没暂停 | 部分播放器不响应媒体键，属正常；题目会盖住画面，答完自动恢复 |
+| 弹题时视频没暂停 | 部分播放器（HDMI 机顶盒、直播）不响应媒体键，属正常；此时画面被盖住、声音被静音，答完自动恢复 |
+| 答完题电视还是静音 | 极少数情况下进程被强杀导致；重新打开一次 App 会自动恢复音量，或按遥控器音量键 |
 | 忘记家长密码 | `adb shell pm clear com.quiztv.guard` 重置为 1234（统计也会清空） |
 
 ## 校验
 
 ```
-SHA256  release/quiztv-v1.0.apk
-0cf7262f42b49c0a00829cc72604bec8edef200b0953902f9ae8fad058527f2b
+SHA256  release/quiztv-v1.1.apk
+6e24c01dd93700029ec4f9ddcac5d746fb52f616531d9400d1b654f762d95a95
 ```
 
 ## 开发与扩充题库

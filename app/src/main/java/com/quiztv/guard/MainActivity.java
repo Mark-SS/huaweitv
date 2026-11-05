@@ -88,7 +88,7 @@ public class MainActivity extends Activity {
 
         intervalText.setText(interval + " 分钟");
         toggleBtn.setText(enabled ? "关闭答题功能" : "开启答题功能");
-        pauseBtn.setText(Prefs.pausePlayback(this) ? "弹题时暂停播放：开" : "弹题时暂停播放：关");
+        pauseBtn.setText(Prefs.pausePlayback(this) ? "弹题时暂停并静音：开" : "弹题时暂停并静音：关");
         permBtn.setVisibility(canOverlay ? View.GONE : View.VISIBLE);
 
         int[] stats = Prefs.todayStats(this);

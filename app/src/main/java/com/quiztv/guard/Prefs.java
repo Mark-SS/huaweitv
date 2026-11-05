@@ -13,6 +13,7 @@ final class Prefs {
     private static final String KEY_ENABLED = "enabled";
     private static final String KEY_PIN = "parent_pin";
     private static final String KEY_PAUSE = "pause_playback";
+    private static final String KEY_MUTED_BY_US = "muted_by_us";
     private static final String KEY_STAT_DAY = "stat_day";
     private static final String KEY_STAT_TOTAL = "stat_total";
     private static final String KEY_STAT_CORRECT = "stat_correct";
@@ -60,6 +61,15 @@ final class Prefs {
 
     static void setPausePlayback(Context context, boolean pause) {
         sp(context).edit().putBoolean(KEY_PAUSE, pause).apply();
+    }
+
+    /** Remembered across process death so a killed service never leaves the TV muted. */
+    static boolean mutedByUs(Context context) {
+        return sp(context).getBoolean(KEY_MUTED_BY_US, false);
+    }
+
+    static void setMutedByUs(Context context, boolean muted) {
+        sp(context).edit().putBoolean(KEY_MUTED_BY_US, muted).commit();
     }
 
     private static String today() {

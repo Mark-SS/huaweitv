@@ -101,6 +101,10 @@ public class GuardService extends Service implements QuizOverlay.Listener {
 
         createChannel();
         startForeground(NOTIFICATION_ID, buildNotification(null));
+        if (Prefs.mutedByUs(this)) {
+            Log.w(TAG, "previous run left the TV muted, unmuting");
+            setMuted(false);
+        }
         Log.d(TAG, "service created, static questions: " + bank.staticCount());
     }
 
@@ -195,9 +199,11 @@ public class GuardService extends Service implements QuizOverlay.Listener {
         } catch (Exception e) {
             Log.w(TAG, "pauseMedia failed", e);
         }
+        setMuted(true);
     }
 
     private void resumeMedia() {
+        setMuted(false);
         if (!pausedMedia || audioManager == null) {
             return;
         }
@@ -220,6 +226,36 @@ public class GuardService extends Service implements QuizOverlay.Listener {
     private void dispatchMediaKey(int keyCode) {
         audioManager.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keyCode));
         audioManager.dispatchMediaKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keyCode));
+    }
+
+    /**
+     * Fallback for sources that ignore media keys / audio focus (HDMI boxes, live TV, sloppy
+     * players): mute the system media stream while the quiz is up, restore afterwards.
+     */
+    private void setMuted(boolean mute) {
+        if (audioManager == null) {
+            return;
+        }
+        if (mute && !Prefs.pausePlayback(this)) {
+            return;
+        }
+        if (!mute && !Prefs.mutedByUs(this)) {
+            return;
+        }
+        try {
+            if (mute && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && audioManager.isStreamMute(AudioManager.STREAM_MUSIC)) {
+                return; // user already muted the TV themselves; leave it alone afterwards too
+            }
+            int direction = mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE;
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, direction, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mute != audioManager.isStreamMute(AudioManager.STREAM_MUSIC)) {
+                Log.w(TAG, "stream mute state did not change");
+            }
+            Prefs.setMutedByUs(this, mute);
+        } catch (Exception e) {
+            Log.w(TAG, "setMuted(" + mute + ") failed", e);
+        }
     }
 
     // -------------------------------------------------------- notification

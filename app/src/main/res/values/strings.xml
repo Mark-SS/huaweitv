@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">答题看电视</string>
+    <string name="notif_channel">答题守护</string>
+    <string name="notif_title">答题看电视 正在守护</string>
+    <string name="notif_text">每 %1$d 分钟弹出一道四年级题目</string>
+    <string name="notif_no_permission">缺少"显示在其他应用上层"权限，无法弹题</string>
+    <string name="keepalive_desc">仅用于在系统清理后台后重新拉起答题守护服务，不读取屏幕内容。</string>
+</resources>
